@@ -48,7 +48,7 @@ class HTTPServer:
 
     def handle_request(self, request_data):
         try:
-            # Parse the request line
+            print(request_data)
             lines = request_data.splitlines()
             if not lines:
                 return self.internal_error_response()
@@ -69,7 +69,7 @@ class HTTPServer:
     def add_route(self, method, path, handler):
         self.routes[(method, path)] = handler
 
-# Define handler functions
+
 def index():
     return 'HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<h1>Welcome to the Home Page</h1>'
 
