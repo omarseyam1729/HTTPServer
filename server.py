@@ -2,13 +2,26 @@ import socket
 import threading
 
 class HTTPServer:
+    """Minimal HTTP/1.0 server supporting basic route handling."""
+
     def __init__(self, host='localhost', port=8000):
+        """Initialize the server instance.
+
+        Parameters
+        ----------
+        host : str, optional
+            Interface to bind the listening socket to.
+        port : int, optional
+            Port number to listen on.
+        """
         self.host = host
         self.port = port
-        self.routes = {} 
+        self.routes = {}
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def start(self):
+        """Begin listening for incoming connections and process them."""
+
         self.server_socket.bind((self.host, self.port))
         self.server_socket.listen(5)
         print(f'Serving HTTP on {self.host} port {self.port}...')
@@ -22,6 +35,8 @@ class HTTPServer:
             self.server_socket.close()
 
     def handle_client(self, client_connection):
+        """Process a connected client socket."""
+
         try:
             request_data = b''
             while True:
@@ -47,6 +62,8 @@ class HTTPServer:
             client_connection.close()
 
     def handle_request(self, request_data):
+        """Parse the HTTP request and invoke the matching route handler."""
+
         try:
             print(request_data)
             lines = request_data.splitlines()
@@ -61,22 +78,34 @@ class HTTPServer:
             return self.internal_error_response()
 
     def default_response(self):
+        """Return a generic 404 response for undefined routes."""
+
         return 'HTTP/1.1 404 Not Found\r\n\r\n404 Not Found'
 
     def internal_error_response(self):
+        """Return a 500 response when an exception occurs."""
+
         return 'HTTP/1.1 500 Internal Server Error\r\n\r\n500 Internal Server Error'
 
     def add_route(self, method, path, handler):
+        """Register a callback to handle a specific HTTP method and path."""
+
         self.routes[(method, path)] = handler
 
 
 def index():
+    """Return the HTML for the root page."""
+
     return 'HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<h1>Welcome to the Home Page</h1>'
 
 def about():
+    """Return the HTML for the about page."""
+
     return 'HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<h1>About Us</h1><p>This is the about page.</p>'
 
 def not_found():
+    """Return a simple 404 page."""
+
     return 'HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\n\r\n<h1>404 Not Found</h1>'
 
 if __name__ == '__main__':
